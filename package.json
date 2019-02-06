@@ -1,0 +1,43 @@
+{
+  "name": "mysql-practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ckallemeyn/mysql-practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ckallemeyn/mysql-practice/issues"
+  },
+  "homepage": "https://github.com/ckallemeyn/mysql-practice#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
+    "mysql": "^2.16.0",
+    "nodemon": "^1.18.9",
+    "request": "^2.88.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.2",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "proptypes": "^1.1.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
+  }
+}
