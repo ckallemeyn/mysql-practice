@@ -10,10 +10,8 @@ CREATE TABLE owners (
 
 CREATE TABLE breeds (
   id INT NOT NULL AUTO_INCREMENT,
-  owner_id INT,
   breed VARCHAR(35),
   img VARCHAR(255),
-  PRIMARY KEY(id),
-  FOREIGN KEY (owner_id)
-    REFERENCES owners(id)
+  owner_id INT NOT NULL,
+  PRIMARY KEY(id)
 );

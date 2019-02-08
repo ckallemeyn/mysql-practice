@@ -1,25 +1,25 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import axios from 'axios';
 
 export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       owner: '',
+      dogName: '',
       breed: '',
+      dogData: [],
     }
     this.breedRef = React.createRef();
     this.ownerRef = React.createRef();
-    this.addOwner = this.addOwner.bind(this);
     this.searchBreed = this.searchBreed.bind(this);
     this.handleInput = this.handleInput.bind(this);
+    this.sendUserData = this.sendUserData.bind(this);
   }
-  addOwner() {
-    // let {value, name} = this.ownerRef.current;
-    // console.log(`found owner name ${name} and value ${value}`);
-  }
+
   handleInput(e) {
     e.preventDefault();
-    let {name, value} = e.target;
+    let { name, value } = e.target;
     this.setState({
       [name]: value
     });
@@ -28,13 +28,34 @@ export default class App extends Component {
   searchBreed(e) {
     e.preventDefault();
     let ownerName = this.ownerRef.current.value;
+    // let petName = this.petNameRef.current.value;
     let breed = this.breedRef.current.value;
     console.log(`found owner ${ownerName}, and his dog ${breed}`);
-    this.setState({
-      owner: '',
-      breed: ''
-    });
+    let postDogData = async () => {
+      let response = await this.sendUserData(ownerName, breed);
+
+      if (response) {
+        console.log('received the response from server!', response);
+        this.setState({
+          owner: '',
+          breed: ''
+        });
+      } else {
+        console.error('unable to recieve response from server');
+      }
+    }
+  postDogData();
   }
+
+  async sendUserData(owner, breed) {
+    // add in petname later
+    try {
+      return await axios.post('/fetch/', {owner, breed});
+    } catch(error) {
+      console.error('Could not send the data!');
+    }
+  }
+
 
   render() {
     let { owner, breed } = this.state;

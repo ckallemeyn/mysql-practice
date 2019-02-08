@@ -6,13 +6,14 @@ const port = 3005;
 const db = require('../db/index.js'); // mysql
 const router = express.Router();
 const getDogs = require('../helpers/dogApi.js');
-
+const insertBreeds = require('./utils/utils.js');
 
 app.use(express.static('./public/dist'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));// shows http request in color coded format
 app.use('/fetch',router)// need to use router in order to make requests
+
 app.listen(port, ()=> console.log(`listening on port number ${port}`));
 
 db.connect((err) => {
@@ -26,19 +27,12 @@ db.connect((err) => {
 // define routes here for dog API
 router.get('/', async (req, res) => {
   let breedPhotos = await getDogs();
-  let json = {}
   if (!breedPhotos.data) {
     console.error('unable to find dog photos');
   } else {
-    console.log('found breed photo',breedPhotos.data.message[0])
+    console.log('found breed photo', breedPhotos.data.message[0]);
     res.send('hello dogs');
   }
-  // getDogs()
-  // .then((response) => {
-  //   console.log(response.data.message[0]);
-  // }).catch((err)=> {
-  //   console.log('could not resolve api call', err);
-  // })
 });
 
 router.get('/:name', (req, res) => {
@@ -46,5 +40,31 @@ router.get('/:name', (req, res) => {
   res.send('found the name');
 });
 
+router.post('/', async (req, res) => {
+  let { owner, breed } = req.body;
+  console.log('found the breed', breed);
+  let queryStr = `INSERT INTO owners(name) VALUES (?)`;
+  let breedQuery = 'INSERT INTO breeds(owner_id, breed, img) VALUES \
+                    ((SELECT id FROM owners WHERE name = ? LIMIT 1),?,?)';
+  let breedPhotos = await getDogs(breed);
+
+  if (breedPhotos) {
+
+    let img = breedPhotos.data.message;
+    console.log('found the img', img);
+
+    db.query(queryStr, [owner], async (error, results, fields) => {
+      if (error) {
+        console.error('could not insert into the db', error);
+      }
+      if (results !== undefined) {
+        await insertBreeds(breedQuery, owner, breed, img).then((response) => {
+          console.log('please work and return the success', response);
+        }).catch((error)=> console.log('error in promise', error));
+      }
+    });
+  }
+    res.send('received owner and dog info');
+});
 
 
