@@ -25,14 +25,16 @@ db.connect((err) => {
 
 
 // define routes here for dog API
-router.get('/', async (req, res) => {
-  let breedPhotos = await getDogs();
-  if (!breedPhotos.data) {
-    console.error('unable to find dog photos');
-  } else {
-    console.log('found breed photo', breedPhotos.data.message[0]);
-    res.send('hello dogs');
-  }
+router.get('/', (req, res) => {
+  let { name } = req.query;
+  // need to get name breed and img from both tables where the name matches the user input name and owner_id matches owner.id
+  let qs = `SELECT name, breed, img FROM owners INNER JOIN breeds ON owners.id = breeds.owner_id WHERE owners.name = ?`
+  db.query(qs, [name], (err, results, fields) => {
+    if (err) {
+      console.error('Could not retrieve info from DB', err);
+    }
+    res.status(200).send(results);
+  });
 });
 
 router.get('/:name', (req, res) => {
@@ -49,7 +51,6 @@ router.post('/', async (req, res) => {
   let breedPhotos = await getDogs(breed);
 
   if (breedPhotos) {
-
     let img = breedPhotos.data.message;
     console.log('found the img', img);
 
@@ -67,10 +68,10 @@ router.post('/', async (req, res) => {
         console.error('could not insert BREED', error);
       }
       console.log('found the results for breeds', results);
-      return results
-      res.sendStatus(201);
+      res.status(201).send('recieved user input').end();
     });
   }
+
 });
 
 

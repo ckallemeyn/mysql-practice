@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Breed from './Breed.jsx';
 
 export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       owner: '',
+      ownerName: '',
       dogName: '',
       breed: '',
-      dogData: [],
+      dogPhotos: [],
     }
     this.breedRef = React.createRef();
     this.ownerRef = React.createRef();
     this.searchBreed = this.searchBreed.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.sendUserData = this.sendUserData.bind(this);
+    this.getPhotos = this.getPhotos.bind(this);
+    this.handlePhotos = this.handlePhotos.bind(this);
   }
 
   handleInput(e) {
@@ -56,9 +60,38 @@ export default class App extends Component {
     }
   }
 
+  async getPhotos(owner) {
+    let config = {
+      params: {
+        name: owner,
+      }
+    };
+    try {
+      return await axios.get('/fetch/', config);
+    } catch(error) {
+      console.error('UH OH CANNOT GET GETPHOTOS FROM DB')
+    }
+  }
+  handlePhotos() {
+    let app = this;
+    let owner = this.ownerRef.current.value;
+    this.getPhotos(owner).then((response) => {
+      console.log('RESPONSE in handlePhotos', response);
+      // update state here;
+      let data = response.data
+      app.setState({
+        dogPhotos: data,
+        ownerName: owner,
+        owner: ''
+      });
+    }).catch((error) => {
+      console.error('ERROR in handlePhotos', error);
+    });
+  }
+
 
   render() {
-    let { owner, breed } = this.state;
+    const { owner, breed, dogPhotos, ownerName } = this.state;
     return (
       <div>
         <h1>Go Fetch!</h1>
@@ -76,6 +109,10 @@ export default class App extends Component {
             value={breed} ref={this.breedRef} onChange={this.handleInput}/>
           <input type="submit" value="submit"/>
         </form>
+        <button onClick={this.handlePhotos}>Show photos!</button>
+        <div>
+          <Breed photos={dogPhotos} name={ownerName}/>
+        </div>
       </div>
     )
   }
