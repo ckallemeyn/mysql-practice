@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
   console.log('found the breed', breed);
   let queryStr = `INSERT INTO owners(name) VALUES (?)`;
   let breedQuery = 'INSERT INTO breeds(owner_id, breed, img) VALUES \
-                    ((SELECT id FROM owners WHERE name = ? LIMIT 1),?,?)';
+                  ((SELECT id FROM owners WHERE name = ? LIMIT 1),?,?)';
   let breedPhotos = await getDogs(breed);
 
   if (breedPhotos) {
@@ -53,18 +53,24 @@ router.post('/', async (req, res) => {
     let img = breedPhotos.data.message;
     console.log('found the img', img);
 
-    db.query(queryStr, [owner], async (error, results, fields) => {
+    db.query(queryStr, [owner], (error, results, fields) => {
       if (error) {
         console.error('could not insert into the db', error);
       }
       if (results !== undefined) {
-        await insertBreeds(breedQuery, owner, breed, img).then((response) => {
-          console.log('please work and return the success', response);
-        }).catch((error)=> console.log('error in promise', error));
+        console.log('results of owner query', results);
       }
     });
+
+    db.query(breedQuery, [owner, breed, img], (error, results, fields) => {
+      if (error) {
+        console.error('could not insert BREED', error);
+      }
+      console.log('found the results for breeds', results);
+      return results
+      res.sendStatus(201);
+    });
   }
-    res.send('received owner and dog info');
 });
 
 
